@@ -427,7 +427,7 @@ class GoogleMapsScraper {
     return results;
   }
 
-  async scrapeWithRetry(linkElement, expectedName, maxRetries = 3) {
+  async scrapeWithRetry(linkElement, expectedName, maxRetries = 5) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         // Dismiss suggestions overlay if visible
