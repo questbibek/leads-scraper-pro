@@ -1,183 +1,375 @@
-# Google Maps Easy Scrape - Persistent Sidebar Edition
+# Google Maps Easy Scrape - Enhanced Edition
 
-A modern Chrome extension for scraping Google Maps search results with a persistent sidebar interface.
+A powerful Chrome extension for scraping Google Maps search results with advanced features, real-time progress tracking, and comprehensive data extraction.
 
-## ✨ Features
+## ✨ New Features (v2.1)
 
-- **Persistent Sidebar**: Scraper interface slides in from the right side of Google Maps
-- **Data Persistence**: Results are saved even when switching tabs or closing/reopening the browser
-- **Multi-Location Support**: Scrape multiple locations in a single operation
-- **Auto-Download**: Automatically downloads CSV after scraping completes
-- **Clean UI**: Modern, responsive interface with smooth animations
-- **Progress Tracking**: Real-time progress updates during scraping
+### 🎯 Enhanced Data Extraction
+- **Social Media Links**: Automatically extracts Facebook, Instagram, Twitter, and LinkedIn profiles
+- **Email Addresses**: Detects and captures email addresses from business listings
+- **Business Categories**: Extracts business type/category information
+- **Operating Hours**: Captures business hours when available
+- **Price Level**: Records price range indicators ($ symbols)
+- **Improved Phone Detection**: Multiple fallback methods for better phone number extraction
+
+### ⚡ Real-Time Experience
+- **Live Progress Bar**: Visual progress indicator with percentage completion
+- **Incremental Updates**: Results appear in the table as they're scraped (no waiting)
+- **Pause/Resume**: Control scraping with pause and resume functionality
+- **Auto-Scroll**: Table automatically scrolls to show latest results
+- **Fade-In Animations**: Smooth animations for new entries
+
+### 💾 Smart Data Persistence
+- **Auto-Save**: Results automatically saved with debouncing (500ms)
+- **Form State Memory**: Search terms and locations restored on page reload
+- **Instant Recovery**: Previous results load immediately when reopening sidebar
+- **Crash-Resistant**: Data persists even if browser crashes
+
+### 🎨 UI Improvements
+- **Social Link Counter**: Shows number of social media links found (e.g., "3 🔗")
+- **Enhanced Progress Display**: Shows current item being scraped
+- **Better Error Messages**: Clear, emoji-based status indicators
+- **Responsive Animations**: Smooth transitions and hover effects
+
+## 📊 Complete Data Fields
+
+The scraper now collects **16 data points** for each business:
+
+1. **Location** - Search location
+2. **Title** - Business name
+3. **Rating** - Star rating
+4. **Reviews** - Number of reviews
+5. **Categories** - Business type/category
+6. **Phone** - Phone number
+7. **Email** - Email address (when available)
+8. **Website** - Website URL
+9. **Address** - Full address
+10. **Facebook** - Facebook profile link
+11. **Instagram** - Instagram profile link
+12. **Twitter** - Twitter/X profile link
+13. **LinkedIn** - LinkedIn profile link
+14. **Hours** - Business hours
+15. **Price Level** - Price range ($, $$, $$$)
+16. **Google Maps Link** - Direct link to listing
 
 ## 🚀 Installation
 
-1. **Download/Clone** this repository to your local machine
+1. **Download the Extension**
+   - Download all files from this repository
+   - Or clone: `git clone https://github.com/questbibek/google-maps-scraper.git`
 
-2. **Open Chrome Extensions Page**
+2. **Open Chrome Extensions**
    - Navigate to `chrome://extensions/`
-   - Enable "Developer mode" (toggle in top-right corner)
+   - Enable "Developer mode" (toggle in top-right)
 
 3. **Load the Extension**
    - Click "Load unpacked"
-   - Select the folder containing these files
-   - The extension icon should appear in your toolbar
+   - Select the folder containing the extension files
+   - Extension icon will appear in your toolbar
 
 ## 📖 How to Use
 
-### Method 1: Using the Sidebar (Recommended)
+### Quick Start
 
-1. **Navigate to Google Maps**
-   - Go to https://www.google.com/maps
+1. **Go to Google Maps**
+   - Visit https://www.google.com/maps
 
-2. **Open the Scraper**
-   - Click the "🗺️ Scraper" button on the right edge of the screen
-   - The sidebar will slide in from the right
+2. **Open Scraper**
+   - Click the "🗺️ Scraper" button on the right edge
+   - Or click the extension icon → "Open Scraper Sidebar"
 
-3. **Configure Your Search**
-   - **Search Term**: What you're looking for (e.g., "beauty salon", "restaurant", "dentist")
-   - **Locations**: Enter multiple locations separated by commas (e.g., "Kathmandu, Bhaktapur, Lalitpur")
+3. **Configure Search**
+   - **Search Term**: What you're looking for (e.g., "coffee shop", "dentist")
+   - **Locations**: Multiple locations separated by commas
+   - Example: `Kathmandu, Pokhara, Lalitpur`
 
 4. **Start Scraping**
    - Click "Start Scraping"
-   - Watch the progress in real-time
-   - Results appear in the table as they're collected
+   - Watch real-time progress and results
+   - Use "⏸️ Pause" to pause anytime
+   - Use "▶️ Resume" to continue
 
 5. **Download Results**
-   - CSV automatically downloads when scraping completes
-   - Or click "Download CSV" anytime to manually download
-   - Click "Clear Results" to start fresh
+   - CSV auto-downloads when complete
+   - Or click "📥 Download CSV" manually
+   - Click "🗑️ Clear Results" to start fresh
 
-### Method 2: Using the Extension Popup
+### Advanced Tips
 
-1. **Click the Extension Icon** in your Chrome toolbar
-2. **Click "Open Scraper Sidebar"** to launch the sidebar interface
-3. Follow steps 3-5 from Method 1 above
+**Pause/Resume Scraping**
+- Click "⏸️ Pause" during scraping to pause
+- Click "▶️ Resume" to continue from where you left off
+- Useful for large scraping jobs or if you need to use Google Maps
 
-## 📊 Data Collected
+**Data Persistence**
+- Results are automatically saved every 500ms
+- Close and reopen browser - your data is still there
+- Search terms and locations are also remembered
+- Only cleared when you click "🗑️ Clear Results"
 
-The scraper collects the following information for each result:
+**Real-Time Monitoring**
+- Watch the progress bar fill up
+- See each business name as it's scraped
+- Results appear immediately in the table
+- Social media links counted and displayed (e.g., "3 🔗")
 
-- **Location** - The search location
-- **Title** - Business/place name
-- **Rating** - Star rating (if available)
-- **Reviews** - Number of reviews
-- **Phone** - Phone number (if available)
-- **Website** - Website URL (if available)
-- **Address** - Full address
-- **Google Maps Link** - Direct link to the place on Google Maps
+**Multiple Locations**
+- Use commas to separate locations
+- Example: `Thamel, Kathmandu, Patan, Bhaktapur`
+- Scraper will search each location sequentially
+- Each result tagged with its location
 
-## 💾 Data Persistence
+## 🎯 Use Cases
 
-- Results are automatically saved to Chrome's local storage
-- Data persists across:
-  - Tab switches
-  - Browser restarts
-  - Page refreshes
-- Use "Clear Results" button to remove saved data
+### Business Research
+```
+Search: "digital marketing agency"
+Locations: New York, Los Angeles, Chicago
+Result: Comprehensive list with contact info and social profiles
+```
 
-## 🎨 Features Breakdown
+### Lead Generation
+```
+Search: "real estate agent"
+Locations: Miami, Orlando, Tampa
+Result: Phone numbers, emails, and social media for outreach
+```
 
-### Persistent Interface
-- Sidebar stays accessible while browsing Google Maps
-- Toggle button always visible on the right edge
-- Smooth slide-in/out animations
+### Market Analysis
+```
+Search: "italian restaurant"
+Locations: Manhattan, Brooklyn, Queens
+Result: Ratings, reviews, and pricing data for analysis
+```
 
-### Smart Scraping
-- Automatically scrolls to load all results
-- Clicks through each result to get detailed information
-- Handles errors gracefully
-- Maximum 50 results per location (configurable in code)
-
-### CSV Export
-- Auto-generated filename with timestamp
-- Properly formatted with headers
-- Handles special characters in data
-- One-click download
+### Competitor Research
+```
+Search: "fitness gym"
+Locations: Boston, Cambridge, Somerville
+Result: Complete competitor profiles with social presence
+```
 
 ## ⚙️ Configuration
 
-You can modify these settings in `content.js`:
+### Adjust Scraping Speed
+
+Edit `content.js` to modify delays:
 
 ```javascript
-// Maximum results per location (line ~149)
+// Line ~220: Delay after search
+await this.sleep(3000);  // 3 seconds
+
+// Line ~225: Delay after clicking result
+await this.sleep(2500);  // 2.5 seconds
+
+// Line ~240: Delay between locations
+await this.sleep(2000);  // 2 seconds
+```
+
+### Change Maximum Results
+
+```javascript
+// Line ~213: Maximum results per location
 const maxResults = Math.min(links.length, 50);
+```
 
-// Scroll attempts (line ~183)
-const maxScrolls = 30;
+### Modify Auto-Save Interval
 
-// Delays between actions
-await this.sleep(3000);  // After search
-await this.sleep(2500);  // After clicking result
-await this.sleep(2000);  // Between locations
+```javascript
+// Line ~615: Debounce delay
+this.saveTimeout = setTimeout(() => {
+  this.performSave();
+}, 500);  // 500ms - increase for less frequent saves
+```
+
+## 📁 File Structure
+
+```
+google-maps-scraper/
+├── manifest.json       # Extension configuration
+├── content.js          # Main scraper logic (enhanced)
+├── sidebar.css         # Styling (enhanced)
+├── popup.html          # Extension popup interface
+├── popup.js            # Popup logic
+├── map.png             # Extension icon
+└── README.md           # This file
 ```
 
 ## 🔧 Technical Details
 
-### Files Structure
-```
-├── manifest.json       # Extension configuration
-├── popup.html         # Extension popup interface
-├── popup.js           # Popup logic
-├── content.js         # Main scraper logic (injected into Google Maps)
-├── sidebar.css        # Sidebar styling
-├── map.png            # Extension icon
-└── README.md          # This file
-```
+### Chrome Storage API
+- Uses `chrome.storage.local` for data persistence
+- Automatically saves every 500ms (debounced)
+- No size limit concerns for typical use cases
 
-### Permissions Used
-- `activeTab` - Access current tab
-- `scripting` - Inject content script
-- `storage` - Save results locally
+### DOM Selectors
+The scraper uses multiple fallback selectors for reliability:
+- Phone: 4 different selector strategies
+- Rating: 2 different selector strategies
+- Reviews: 2 different selector strategies
+- Social Links: Scans all `<a>` tags on page
 
-### Browser Compatibility
-- Chrome (recommended)
-- Edge (Chromium-based)
-- Brave
-- Other Chromium-based browsers
+### Error Handling
+- Retry logic: Up to 2 retries per result
+- Graceful degradation: If one field fails, others still work
+- Error logging: All errors logged to console for debugging
 
-## 🐛 Troubleshooting
+### Performance
+- Results appear instantly (no batch waiting)
+- Debounced saving reduces storage calls
+- Efficient DOM queries with caching
 
-**Sidebar doesn't appear**
-- Refresh the Google Maps page
-- Make sure you're on google.com/maps
-- Check that the extension is enabled
+## 🛠️ Troubleshooting
 
-**Scraping fails or stops**
-- Google Maps may have changed their HTML structure
-- Try refreshing the page
-- Check browser console for errors (F12)
+### Sidebar Not Appearing
+- **Solution**: Refresh the Google Maps page
+- Make sure you're on `google.com/maps`
+- Check that extension is enabled in `chrome://extensions/`
 
-**Results not saving**
-- Check Chrome's storage permissions
-- Clear browser cache and reload extension
+### Social Links Not Found
+- **Reason**: Not all businesses have social media links on Google Maps
+- Some businesses only link social media from their website
+- The scraper only extracts what's visible in the Google Maps listing
 
-**CSV download doesn't work**
-- Check your download folder
-- Disable popup blockers
-- Check Chrome download settings
+### Phone Numbers Missing
+- **Reason**: Some businesses don't display phone numbers publicly
+- Try the website field - often has phone number
+- Check the actual Google Maps listing manually
 
-## 🙏 Credits
+### Scraping Stops/Fails
+- **Solution**: Google Maps may have changed their HTML structure
+- Try refreshing and starting again
+- Check browser console (F12) for error messages
+- Report issues on GitHub
 
-Created by **Subedi bibek**
-- [Linkedin](https://www.linkedin.com/in/questbibek)
-- [GitHub](https://github.com/questbibek)
+### Data Not Persisting
+- Check Chrome storage permissions
+- Clear extension data: Chrome Extensions → Remove → Reinstall
+- Check available storage: `chrome://quota-internals/`
 
-## ⚖️ Disclaimer
+### Slow Performance
+- Reduce number of locations
+- Increase delays in configuration
+- Close other tabs to free up memory
+- Check your internet connection
 
-This tool is for educational purposes. Please:
-- Respect Google's Terms of Service
-- Don't overload their servers
-- Use responsibly and ethically
-- Consider rate limiting for large scrapes
+## 📊 CSV Export Format
 
-## 📝 License
+The downloaded CSV includes these columns:
+
+| Column | Description | Example |
+|--------|-------------|---------|
+| Location | Search location | "Kathmandu" |
+| Title | Business name | "Blue Bottle Coffee" |
+| Rating | Star rating | "4.5" |
+| Reviews | Review count | "1234" |
+| Categories | Business type | "Coffee shop" |
+| Phone | Phone number | "+1-555-123-4567" |
+| Email | Email address | "info@business.com" |
+| Website | Website URL | "www.business.com" |
+| Address | Full address | "123 Main St, City, State" |
+| Facebook | Facebook URL | "facebook.com/business" |
+| Instagram | Instagram URL | "instagram.com/business" |
+| Twitter | Twitter URL | "twitter.com/business" |
+| LinkedIn | LinkedIn URL | "linkedin.com/company/business" |
+| Hours | Business hours | "Mon-Fri: 9AM-5PM" |
+| Price Level | Price range | "$$$" |
+| Google Maps Link | Direct link | "https://maps.google.com/..." |
+
+## 🎓 Best Practices
+
+### For Best Results
+
+1. **Be Specific**: Use specific search terms ("vegan restaurant" not just "restaurant")
+2. **Limit Locations**: Start with 3-5 locations, then scale up
+3. **Use Pause**: Pause scraping if you need to use Google Maps
+4. **Check Results**: Verify a few results before relying on full dataset
+5. **Respect Rate Limits**: Don't run multiple scrapers simultaneously
+
+### For Lead Generation
+
+1. **Multiple Searches**: Run different search terms for same location
+2. **Export Regularly**: Download CSV after each successful scrape
+3. **Combine Data**: Merge multiple CSV files in Excel/Google Sheets
+4. **Verify Contacts**: Always verify emails/phones before outreach
+5. **Follow GDPR**: Respect privacy laws when collecting business data
+
+### For Market Research
+
+1. **Compare Locations**: Use same search term across different cities
+2. **Track Ratings**: Sort by rating to find top performers
+3. **Analyze Reviews**: High review count = popular business
+4. **Check Price Levels**: Understand market pricing
+5. **Social Presence**: Businesses with social links often more active
+
+## ⚖️ Legal & Ethical Use
+
+### Please Remember
+
+- ✅ **Educational purposes**: Learning web scraping and automation
+- ✅ **Personal research**: Finding businesses for your own use
+- ✅ **Market analysis**: Understanding business landscapes
+- ✅ **Public data**: Only collecting publicly visible information
+
+- ❌ **Spam/Harassment**: Don't use for unsolicited mass outreach
+- ❌ **Terms Violation**: Respect Google's Terms of Service
+- ❌ **Data Reselling**: Don't sell scraped data commercially
+- ❌ **Overloading Servers**: Don't run excessive concurrent scrapes
+
+### Best Practices
+
+- Use reasonable delays between requests
+- Don't scrape more than you need
+- Respect robots.txt and rate limits
+- Follow GDPR and data protection laws
+- Only use data for legitimate purposes
+
+## 🙏 Credits & Support
+
+**Created by**: Quest Bibek (Subedi Bibek)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/questbibek)
+- 🐙 [GitHub](https://github.com/questbibek)
+
+**Support the Project**
+- ⭐ Star the repository
+- 🐛 Report bugs via GitHub Issues
+- 💡 Suggest features via GitHub Discussions
+- 🤝 Contribute via Pull Requests
+
+## 📜 License
 
 This project is open source and available for personal and educational use.
 
+**Disclaimer**: This tool is provided as-is for educational purposes. Users are responsible for ensuring their use complies with Google's Terms of Service and applicable laws.
+
 ---
 
-**Version**: 2.0  
-**Last Updated**: February 2024  
-**Maintained by**: Quest Bibek
+## 🆕 Version History
+
+### v2.1 (Enhanced Edition) - Current
+- ✨ Social media link extraction (Facebook, Instagram, Twitter, LinkedIn)
+- ✨ Email address detection
+- ✨ Business categories and hours
+- ✨ Price level indicators
+- ⚡ Real-time progress bar with percentage
+- ⚡ Incremental table updates
+- ⚡ Pause/resume functionality
+- 💾 Enhanced data persistence with auto-save
+- 💾 Form state restoration
+- 🎨 Improved UI with animations
+- 🎨 Social link counter in table
+- 🐛 Better error handling with retry logic
+- 📊 16-field CSV export
+
+### v2.0 (Original)
+- 🎯 Persistent sidebar interface
+- 📊 Multi-location scraping
+- 💾 Data persistence
+- 📥 CSV export
+- 🎨 Modern UI design
+
+---
+
+**Made with ❤️ by Quest Bibek | Enhanced for the community**
+
+For questions, issues, or feature requests, visit the [GitHub repository](https://github.com/questbibek/google-maps-scraper)

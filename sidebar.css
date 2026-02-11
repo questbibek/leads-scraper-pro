@@ -37,11 +37,12 @@
   writing-mode: vertical-rl;
   text-orientation: mixed;
   box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 #gmaps-scraper-toggle:hover {
   background: #0056b3;
+  transform: translateY(-50%) translateX(-3px);
 }
 
 #gmaps-scraper-toggle.hidden {
@@ -114,6 +115,18 @@
   border-color: #007BFF;
 }
 
+/* Button Group */
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.button-group .scraper-button {
+  flex: 1;
+  margin-bottom: 0;
+}
+
 /* Buttons */
 .scraper-button {
   width: 100%;
@@ -148,6 +161,7 @@
 
 .scraper-button.secondary:hover:not(:disabled) {
   background: #545b62;
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
 }
 
 .scraper-button.success {
@@ -186,6 +200,77 @@
   color: #721c24;
 }
 
+.progress-info.warning {
+  background: #fff3cd;
+  border-left-color: #ffc107;
+  color: #856404;
+}
+
+/* Progress Bar Styles */
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #007BFF, #0056b3);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  align-items: center;
+}
+
+.progress-text {
+  font-weight: 600;
+  color: #007BFF;
+}
+
+.progress-location {
+  color: #666;
+  font-style: italic;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Results Section */
 .results-section {
   margin-top: 20px;
@@ -212,6 +297,16 @@
   border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 /* Results Table */
@@ -249,17 +344,24 @@
   color: #495057;
 }
 
-.results-table tr:hover {
+.results-table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.results-table tbody tr:hover {
   background: #f8f9fa;
+  transform: scale(1.01);
 }
 
 .results-table a {
   color: #007BFF;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .results-table a:hover {
   text-decoration: underline;
+  color: #0056b3;
 }
 
 /* Scrollbar Styling */
@@ -278,6 +380,7 @@
 .results-table-container::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
+  transition: background 0.3s ease;
 }
 
 .scraper-body::-webkit-scrollbar-thumb:hover,
@@ -295,20 +398,20 @@
 .empty-state-icon {
   font-size: 48px;
   margin-bottom: 10px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .empty-state-text {
   font-size: 14px;
-}
-
-/* Animation */
-@keyframes slideIn {
-  from {
-    right: -450px;
-  }
-  to {
-    right: 0;
-  }
 }
 
 /* Loading Spinner */
@@ -326,4 +429,63 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Slide In Animation */
+@keyframes slideIn {
+  from {
+    right: -450px;
+    opacity: 0;
+  }
+  to {
+    right: 0;
+    opacity: 1;
+  }
+}
+
+/* Fade In for Table Rows */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #gmaps-scraper-sidebar {
+    width: 100%;
+    right: -100%;
+  }
+  
+  #gmaps-scraper-toggle.hidden {
+    right: 100%;
+  }
+}
+
+/* Tooltip styles */
+[title] {
+  position: relative;
+  cursor: help;
+}
+
+/* Success animation for downloads */
+@keyframes successPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+.scraper-button.success:not(:disabled) {
+  animation: successPulse 2s ease-out;
 }

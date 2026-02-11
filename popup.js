@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             
             contentDiv.innerHTML = `
                 <div class="status-card">
-                    <h3>✓ Ready to Scrape</h3>
+                    <h3>âœ“ Ready to Scrape</h3>
                     <p class="status-message">
                         The scraper sidebar is ${isOpen ? 'open' : 'ready'} on this Google Maps page.
                     </p>
@@ -35,11 +35,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </div>
                 
                 <button id="openSidebar" class="button">
-                    ${isOpen ? '✓ Sidebar Open' : 'Open Scraper Sidebar'}
+                    ${isOpen ? 'âœ“ Sidebar Open' : 'Open Scraper Sidebar'}
                 </button>
                 
                 <button id="goToMaps" class="button secondary">
-                    🌍 New Google Maps Tab
+                    ðŸŒ New Google Maps Tab
                 </button>
             `;
             
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Not on Google Maps
         contentDiv.innerHTML = `
             <div class="status-card not-maps">
-                <div class="not-maps-icon">🗺️</div>
+                <div class="not-maps-icon">ðŸ—ºï¸</div>
                 <p class="status-message">
                     Please navigate to Google Maps to use this extension.
                 </p>
