@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Google Maps Easy Scrape",
     "version": "2.0",
-    "description": "Google Maps Easy Scrape with Persistent Sidebar by Mike Powers",
+    "description": "Google Maps Easy Scrape with Persistent Sidebar by Quest Bibek",
     "permissions": ["activeTab", "scripting", "storage"],
     "action": {
       "default_popup": "popup.html"

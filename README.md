@@ -160,9 +160,9 @@ await this.sleep(2000);  // Between locations
 
 ## 🙏 Credits
 
-Created by **Mike Powers**
-- [YouTube Channel](https://www.youtube.com/@itsmikepowers)
-- [Buy Me a Coffee](https://www.buymeacoffee.com/itsmikepowers)
+Created by **Subedi bibek**
+- [Linkedin](https://www.linkedin.com/in/questbibek)
+- [GitHub](https://github.com/questbibek)
 
 ## ⚖️ Disclaimer
 
@@ -180,4 +180,4 @@ This project is open source and available for personal and educational use.
 
 **Version**: 2.0  
 **Last Updated**: February 2024  
-**Maintained by**: Mike Powers
+**Maintained by**: Quest Bibek

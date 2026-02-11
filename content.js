@@ -55,7 +55,7 @@ class GoogleMapsScraper {
     return `
       <div class="scraper-header">
         <h1>🗺️ Google Maps Scraper</h1>
-        <div class="subtitle">by Mike Powers</div>
+        <div class="subtitle">by questbibek</div>
       </div>
       
       <div class="scraper-body">
