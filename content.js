@@ -76,6 +76,12 @@ class GoogleMapsScraper {
           <input type="text" id="sidebar-locations" class="scraper-input" placeholder="e.g., Kathmandu, Bhaktapur, Lalitpur" />
           <small>Enter multiple locations separated by commas</small>
         </div>
+
+        <div class="input-group">
+          <label for="sidebar-max-results">Max Results per Location:</label>
+          <input type="number" id="sidebar-max-results" class="scraper-input" placeholder="Leave empty for no limit" min="1" />
+          <small>Empty = scrape all available results</small>
+        </div>
         
         <div class="button-group">
           <button id="sidebar-start-scrape" class="scraper-button">
@@ -213,7 +219,16 @@ class GoogleMapsScraper {
         // Perform search
         const searchQuery = `${searchTerm} in ${location}`;
         await this.performSearch(searchQuery);
-        await this.sleep(3000);
+        
+        // Wait longer for search results to load
+        this.showProgress(`⏳ Waiting for results to load for ${location}...`, 'show');
+        await this.sleep(5000); // Increased from 3000 to 5000
+        
+        // Wait for the results pane to be ready
+        await this.waitForResultsPane();
+        
+        this.showProgress(`📊 Results loaded. Starting to scrape ${location}...`, 'show');
+        await this.sleep(2000); // Extra buffer time
 
         // Scrape results with real-time updates
         const results = await this.scrapeCurrentPage();
@@ -225,9 +240,10 @@ class GoogleMapsScraper {
         this.showProgress(`❌ Error scraping ${location}: ${error.message}`, 'error');
       }
 
-      // Delay between locations
+      // Delay between locations - increased for better stability
       if (i < locations.length - 1) {
-        await this.sleep(2000);
+        this.showProgress(`⏳ Preparing next location...`, 'show');
+        await this.sleep(3000); // Increased from 2000 to 3000
       }
     }
 
@@ -248,24 +264,80 @@ class GoogleMapsScraper {
   }
 
   async performSearch(searchQuery) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       const searchInput = document.querySelector('input.UGojuc');
       if (searchInput) {
+        // Focus and clear the input first
+        searchInput.focus();
+        searchInput.value = '';
+        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        
+        // Set the search query
         searchInput.value = searchQuery;
         searchInput.dispatchEvent(new Event('input', { bubbles: true }));
         
+        // Small delay to let suggestions appear (we'll dismiss them)
+        await this.sleep(300);
+        
+        // Dismiss the suggestions dropdown by pressing Escape first
+        // This prevents accidentally clicking on a suggestion element
+        const suggestionsGrid = document.querySelector('[role="grid"][aria-label="Suggestions"], .DAdBuc');
+        if (suggestionsGrid) {
+          console.log('⚠️ Suggestions dropdown detected - dismissing before search');
+        }
+        
+        // Use Enter key to submit the search - this is more reliable than
+        // clicking the search button and avoids interacting with suggestions
+        searchInput.dispatchEvent(new KeyboardEvent('keydown', {
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          which: 13,
+          bubbles: true,
+          cancelable: true
+        }));
+        
+        // Fallback: also try clicking the search button
+        await this.sleep(200);
         const searchButton = document.querySelector('button.mL3xi');
         if (searchButton) {
           searchButton.click();
-        } else {
-          const form = document.querySelector('form.NhWQq');
-          if (form) {
-            form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-          }
         }
       }
       resolve();
     });
+  }
+
+  async waitForResultsPane(maxAttempts = 20) {
+    // Wait for results pane to appear and be populated
+    for (let i = 0; i < maxAttempts; i++) {
+      // Dismiss suggestions dropdown if it's still visible
+      const suggestionsGrid = document.querySelector('[role="grid"][aria-label="Suggestions"], .DAdBuc');
+      if (suggestionsGrid) {
+        console.log('⚠️ Suggestions still visible during wait - dismissing');
+        const searchInput = document.querySelector('input.UGojuc');
+        if (searchInput) {
+          searchInput.dispatchEvent(new KeyboardEvent('keydown', {
+            key: 'Escape', code: 'Escape', keyCode: 27, which: 27,
+            bubbles: true, cancelable: true
+          }));
+        }
+      }
+      
+      const resultsPane = document.querySelector('[role="feed"]');
+      const results = document.querySelectorAll('a.hfpxzc');
+      
+      if (resultsPane && results.length > 0) {
+        console.log(`✅ Results pane ready with ${results.length} results`);
+        return true;
+      }
+      
+      console.log(`⏳ Waiting for results pane... attempt ${i + 1}/${maxAttempts}`);
+      await this.sleep(500);
+    }
+    
+    console.warn('⚠️ Results pane wait timed out');
+    return false;
   }
 
   async scrapeCurrentPage() {
@@ -290,7 +362,8 @@ class GoogleMapsScraper {
       return [];
     }
     
-    const maxResults = Math.min(links.length, 50);
+    const maxResultsInput = document.getElementById('sidebar-max-results')?.value?.trim();
+    const maxResults = maxResultsInput ? Math.min(links.length, parseInt(maxResultsInput, 10)) : links.length;
     
     for (let i = 0; i < maxResults; i++) {
       // Check for pause
@@ -303,11 +376,15 @@ class GoogleMapsScraper {
       try {
         console.log(`Scraping ${i + 1}/${maxResults}...`);
         
-        const data = await this.scrapeWithRetry(links[i]);
+        // Get expected business name from aria-label
+        const expectedName = (links[i].getAttribute('aria-label') || '')
+          .replace(/\s*·\s*Visited link\s*$/, '').replace(/\s*·\s*$/, '').trim();
+        
+        const data = await this.scrapeWithRetry(links[i], expectedName);
         data.href = links[i].href;
         data.location = this.currentLocationName;
         
-        console.log('✅ Extracted:', data.title, '- Reviews:', data.reviewCount);
+        console.log('✅ Extracted:', data.title, '- Reviews:', data.reviewCount, '- Phone:', data.phone);
         results.push(data);
         this.allResults.push(data);
         
@@ -323,9 +400,11 @@ class GoogleMapsScraper {
         
       } catch (error) {
         console.error(`❌ Error at ${i + 1}:`, error);
+        const expectedName = (links[i]?.getAttribute('aria-label') || 'Error')
+          .replace(/\s*·\s*Visited link\s*$/, '').replace(/\s*·\s*$/, '').trim();
         const errorData = {
           location: this.currentLocationName,
-          title: 'Error',
+          title: expectedName,
           rating: '',
           reviewCount: '',
           phone: '',
@@ -348,30 +427,103 @@ class GoogleMapsScraper {
     return results;
   }
 
-  async scrapeWithRetry(linkElement, maxRetries = 2) {
+  async scrapeWithRetry(linkElement, expectedName, maxRetries = 3) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
+        // Dismiss suggestions overlay if visible
+        const suggestionsGrid = document.querySelector('[role="grid"][aria-label="Suggestions"], .DAdBuc');
+        if (suggestionsGrid) {
+          console.log('⚠️ Dismissing suggestions overlay');
+          document.activeElement?.blur();
+          const searchInput = document.querySelector('input.UGojuc');
+          if (searchInput) {
+            searchInput.dispatchEvent(new KeyboardEvent('keydown', {
+              key: 'Escape', code: 'Escape', keyCode: 27, which: 27,
+              bubbles: true, cancelable: true
+            }));
+          }
+          await this.sleep(300);
+        }
+
+        // IMPORTANT: Scroll the link into view before clicking
+        // Items far down the list may not respond to click if not visible
+        linkElement.scrollIntoView({ behavior: 'instant', block: 'center' });
+        await this.sleep(300);
+
+        console.log(`🖱️ Click attempt ${attempt + 1}/${maxRetries}: "${expectedName}"`);
         linkElement.click();
-        await this.sleep(2500);
         
-        const data = this.extractDetailPanelData();
+        // Wait for detail panel to show the CORRECT business
+        const verified = await this.waitForCorrectPanel(expectedName, attempt);
         
-        // Validate that we got meaningful data
-        if (data.title && data.title !== 'Error') {
-          return data;
+        if (verified) {
+          const data = this.extractDetailPanelData();
+          if (data.title && data.title !== 'Error') {
+            return data;
+          }
         }
         
+        // Panel didn't match — wait longer before retrying
         if (attempt < maxRetries - 1) {
-          console.log(`Retry attempt ${attempt + 1} for result`);
-          await this.sleep(1000);
+          const retryWait = 2000 + (attempt * 1000);
+          console.log(`⚠️ Retry ${attempt + 1}: panel not verified, waiting ${retryWait}ms before re-click`);
+          await this.sleep(retryWait);
         }
       } catch (error) {
-        console.error(`Attempt ${attempt + 1} failed:`, error);
+        console.error(`❌ Attempt ${attempt + 1} failed:`, error);
         if (attempt === maxRetries - 1) throw error;
+        await this.sleep(2000);
       }
     }
     
-    throw new Error('Failed to scrape after retries');
+    // All retries failed — return empty data with correct title
+    // Do NOT extract from panel as it contains the WRONG business's data
+    console.warn(`⚠️ Could not verify panel for "${expectedName}" after ${maxRetries} attempts. Returning empty data.`);
+    return {
+      title: expectedName,
+      rating: '',
+      reviewCount: '',
+      phone: '',
+      website: '',
+      address: '',
+      socialLinks: { facebook: '', instagram: '', twitter: '', linkedin: '' },
+      email: '',
+      categories: '',
+      hours: '',
+      priceLevel: ''
+    };
+  }
+
+  async waitForCorrectPanel(expectedName, attempt = 0, maxWait = 10000) {
+    const startTime = Date.now();
+    // First attempt waits at least 2s, subsequent attempts wait longer
+    const minWait = 2000 + (attempt * 500);
+    
+    while (Date.now() - startTime < maxWait) {
+      await this.sleep(400);
+      
+      const titleEl = document.querySelector('.DUwDvf');
+      const currentTitle = titleEl?.textContent?.trim() || '';
+      
+      // Check if panel title matches the business we clicked
+      if (currentTitle && currentTitle === expectedName && (Date.now() - startTime) >= minWait) {
+        // Title matches! Now wait a bit more for secondary content to load
+        await this.sleep(500);
+        console.log(`✅ Panel verified: "${currentTitle}" in ${Date.now() - startTime}ms`);
+        return true;
+      }
+      
+      // If title changed to something else (not what we expect, not empty),
+      // and enough time has passed, it might be a different business with similar timing
+      if (currentTitle && currentTitle !== expectedName && (Date.now() - startTime) >= minWait + 2000) {
+        console.warn(`⚠️ Panel shows "${currentTitle}" but expected "${expectedName}" after ${Date.now() - startTime}ms`);
+        return false;
+      }
+    }
+    
+    const finalTitle = document.querySelector('.DUwDvf')?.textContent?.trim() || '';
+    console.warn(`⚠️ Timed out waiting for "${expectedName}". Panel shows: "${finalTitle}"`);
+    return false;
   }
 
   async scrollToLoadAll(resultsPane) {
@@ -379,26 +531,43 @@ class GoogleMapsScraper {
     let attempts = 0;
     const maxScrolls = 30;
 
+    console.log('🔄 Starting scroll to load all results...');
+
     for (let i = 0; i < maxScrolls; i++) {
       resultsPane.scrollTo(0, resultsPane.scrollHeight);
-      await this.sleep(2500); // scroll wait time
+      console.log(`Scroll ${i + 1}/${maxScrolls} - Height: ${resultsPane.scrollHeight}px`);
+      
+      // Increased wait time from 1500ms to 2500ms
+      await this.sleep(2500);
 
       const newHeight = resultsPane.scrollHeight;
       
       if (newHeight === previousHeight) {
         attempts++;
-        if (attempts >= 3) break;
+        console.log(`No height change - attempt ${attempts}/3`);
+        if (attempts >= 3) {
+          console.log('✅ No more content to load');
+          break;
+        }
       } else {
         attempts = 0;
+        console.log(`✅ New content loaded - height increased by ${newHeight - previousHeight}px`);
       }
       previousHeight = newHeight;
 
       const endMessage = document.querySelector('[role="heading"][aria-level="3"]');
       if (endMessage?.textContent.includes("You've reached the end")) {
-        console.log('Reached end');
+        console.log('✅ Reached end of results');
         break;
       }
     }
+    
+    // Final wait to ensure last batch is fully rendered
+    console.log('⏳ Final wait for content to settle...');
+    await this.sleep(2000);
+    
+    const finalCount = document.querySelectorAll('a.hfpxzc').length;
+    console.log(`✅ Scroll complete - ${finalCount} results ready`);
   }
 
   extractDetailPanelData() {
@@ -730,7 +899,8 @@ class GoogleMapsScraper {
       scraperResults: this.allResults,
       lastUpdate: new Date().toISOString(),
       searchTerm: document.getElementById('sidebar-search-term')?.value || '',
-      locations: document.getElementById('sidebar-locations')?.value || ''
+      locations: document.getElementById('sidebar-locations')?.value || '',
+      maxResults: document.getElementById('sidebar-max-results')?.value || ''
     }, () => {
       if (chrome.runtime.lastError) {
         console.error('❌ Save failed:', chrome.runtime.lastError);
@@ -742,7 +912,7 @@ class GoogleMapsScraper {
 
   async loadSavedResults() {
     return new Promise((resolve) => {
-      chrome.storage.local.get(['scraperResults', 'searchTerm', 'locations'], (data) => {
+      chrome.storage.local.get(['scraperResults', 'searchTerm', 'locations', 'maxResults'], (data) => {
         if (data.scraperResults && Array.isArray(data.scraperResults)) {
           this.allResults = data.scraperResults;
           
@@ -756,6 +926,8 @@ class GoogleMapsScraper {
               // Restore form values
               if (data.searchTerm) searchInput.value = data.searchTerm;
               if (data.locations) locationsInput.value = data.locations;
+              const maxResultsInput = document.getElementById('sidebar-max-results');
+              if (data.maxResults && maxResultsInput) maxResultsInput.value = data.maxResults;
               
               this.updateResultsTable();
               

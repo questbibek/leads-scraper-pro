@@ -236,11 +236,13 @@ The scraper uses multiple fallback selectors for reliability:
 - Try the website field - often has phone number
 - Check the actual Google Maps listing manually
 
-### Scraping Stops/Fails
-- **Solution**: Google Maps may have changed their HTML structure
-- Try refreshing and starting again
-- Check browser console (F12) for error messages
-- Report issues on GitHub
+### Multiple Locations Not Working Properly
+- **Solution**: The extension now has better timing (v2.1.1+)
+- After search wait increased to 5 seconds
+- Added smart waiting for results pane
+- If still having issues, see TIMING_GUIDE.md
+- Try reducing number of locations (test with 2-3 first)
+- Check browser console (F12) for detailed logs
 
 ### Data Not Persisting
 - Check Chrome storage permissions
@@ -346,7 +348,19 @@ This project is open source and available for personal and educational use.
 
 ## 🆕 Version History
 
-### v2.1 (Enhanced Edition) - Current
+### v2.1.1 (Multiple Location Fix) - Current
+- 🐛 **Fixed**: Multiple location scraping issues
+- ⏱️ Increased wait time after search (3s → 5s)
+- ⏱️ Added smart wait for results pane to appear
+- ⏱️ Increased scroll wait time (1.5s → 2.5s)
+- ⏱️ Increased click wait time (2.5s → 3.5s)
+- ⏱️ Better logging for debugging
+- 📖 Added comprehensive TIMING_GUIDE.md
+- ✅ Now properly waits between locations
+- ✅ Scrolling works correctly for each location
+- ✅ No more skipping to next search prematurely
+
+### v2.1 (Enhanced Edition)
 - ✨ Social media link extraction (Facebook, Instagram, Twitter, LinkedIn)
 - ✨ Email address detection
 - ✨ Business categories and hours
