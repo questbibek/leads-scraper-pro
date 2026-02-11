@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </div>
                 
                 <button id="openSidebar" class="button">
-                    ${isOpen ? 'âœ“ Sidebar Open' : 'Open Scraper Sidebar'}
+                    ${isOpen ? 'Sidebar Open' : 'Open Scraper Sidebar'}
                 </button>
                 
                 <button id="goToMaps" class="button secondary">
