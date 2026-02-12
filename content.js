@@ -653,16 +653,19 @@ class GoogleMapsScraper {
       // Extract website
       const websiteLink = document.querySelector('a[data-item-id*="authority"]');
       if (websiteLink) {
-        data.website = websiteLink.textContent?.trim() || websiteLink.href || '';
+        let url = websiteLink.href || websiteLink.textContent?.trim() || '';
+        
+        // Extract base domain from URL
+        if (url) {
+          try {
+            const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
+            data.website = urlObj.hostname.replace(/^www\./, '');
+          } catch (e) {
+            // If URL parsing fails, use the original text
+            data.website = url.replace(/^www\./, '');
+          }
+        }
       }
-
-      // Extract address
-      const addressBtn = document.querySelector('[data-item-id="address"]');
-      if (addressBtn) {
-        const addressText = addressBtn.querySelector('.Io6YTe');
-        data.address = addressText?.textContent?.trim() || '';
-      }
-
       // Extract social media links
       const allLinks = document.querySelectorAll('a[href]');
       allLinks.forEach(link => {
