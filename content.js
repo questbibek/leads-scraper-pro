@@ -427,7 +427,7 @@ class GoogleMapsScraper {
     return results;
   }
 
-  async scrapeWithRetry(linkElement, expectedName, maxRetries = 3) {
+  async scrapeWithRetry(linkElement, expectedName, maxRetries = 5) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         // Dismiss suggestions overlay if visible
@@ -663,36 +663,26 @@ class GoogleMapsScraper {
         data.address = addressText?.textContent?.trim() || '';
       }
 
-      // Extract social media links - SCOPED to the detail panel only
-      // The detail panel is inside the scrollable container with class 'm6QErb' 
-      // that contains the business info (not the results feed)
-      const detailPanel = document.querySelector('[role="main"] .m6QErb:not([role="feed"])') 
-        || document.querySelector('.bJzME') 
-        || document.querySelector('.Nv2PK');
-      
-      if (detailPanel) {
-        const panelLinks = detailPanel.querySelectorAll('a[href]');
-        panelLinks.forEach(link => {
-          const href = link.href.toLowerCase();
-          if (href.includes('facebook.com') && !data.socialLinks.facebook) {
-            data.socialLinks.facebook = link.href;
-          } else if (href.includes('instagram.com') && !data.socialLinks.instagram) {
-            data.socialLinks.instagram = link.href;
-          } else if ((href.includes('twitter.com') || href.includes('x.com')) && !data.socialLinks.twitter) {
-            data.socialLinks.twitter = link.href;
-          } else if (href.includes('linkedin.com') && !data.socialLinks.linkedin) {
-            data.socialLinks.linkedin = link.href;
-          }
-        });
-      }
-
-      // Extract email - SCOPED to detail panel only
-      if (detailPanel) {
-        const panelText = detailPanel.innerText || '';
-        const emailMatch = panelText.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
-        if (emailMatch) {
-          data.email = emailMatch[0];
+      // Extract social media links
+      const allLinks = document.querySelectorAll('a[href]');
+      allLinks.forEach(link => {
+        const href = link.href.toLowerCase();
+        if (href.includes('facebook.com') && !data.socialLinks.facebook) {
+          data.socialLinks.facebook = link.href;
+        } else if (href.includes('instagram.com') && !data.socialLinks.instagram) {
+          data.socialLinks.instagram = link.href;
+        } else if ((href.includes('twitter.com') || href.includes('x.com')) && !data.socialLinks.twitter) {
+          data.socialLinks.twitter = link.href;
+        } else if (href.includes('linkedin.com') && !data.socialLinks.linkedin) {
+          data.socialLinks.linkedin = link.href;
         }
+      });
+
+      // Extract email from text content
+      const textContent = document.body.innerText;
+      const emailMatch = textContent.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+      if (emailMatch) {
+        data.email = emailMatch[0];
       }
 
       // Extract business categories
