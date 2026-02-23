@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Not on Google Maps
         contentDiv.innerHTML = `
             <div class="status-card not-maps">
-                <div class="not-maps-icon">🗺️</div>
+                <div class="not-maps-icon">Not a Google Map!</div>
                 <p class="status-message">
                     Please navigate to Google Maps to use this extension.
                 </p>
