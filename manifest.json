@@ -1,9 +1,13 @@
 {
     "manifest_version": 3,
     "name": "Google Maps Easy Scrape",
-    "version": "2.0",
+    "version": "2.1",
     "description": "Google Maps Easy Scrape with Persistent Sidebar by Quest Bibek",
     "permissions": ["activeTab", "scripting", "storage"],
+    "host_permissions": [
+      "https://www.google.com/maps/*",
+      "http://www.google.com/maps/*"
+    ],
     "action": {
       "default_popup": "popup.html"
     },
@@ -15,9 +19,9 @@
         "run_at": "document_idle"
       }
     ],
-    "icons": {
-      "16": "map.jpg",
-      "48": "map.jpg",
-      "128": "map.jpg"
-    }
+  "icons": {
+    "16": "map.png",
+    "48": "map.png",
+    "128": "map.png"
+  }
   }

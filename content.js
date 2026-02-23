@@ -33,6 +33,7 @@ class GoogleMapsScraper {
           isOpen: this.sidebar?.classList.contains('open'),
           resultsCount: this.allResults.length 
         });
+        return true; // ← Keep channel open
       } else if (request.action === 'toggleSidebar') {
         this.toggleSidebar();
       }
@@ -61,7 +62,7 @@ class GoogleMapsScraper {
     return `
       <div class="scraper-header">
         <h1>🗺️ Google Maps Scraper</h1>
-        <div class="subtitle">Enhanced by questbibek</div>
+        <div class="subtitle">Enhanced by <a href="https://www.linkedin.com/in/questbibek" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">questbibek</a></div>
       </div>
       
       <div class="scraper-body">
@@ -264,48 +265,56 @@ class GoogleMapsScraper {
   }
 
   async performSearch(searchQuery) {
-    return new Promise(async (resolve) => {
-      const searchInput = document.querySelector('input.UGojuc');
-      if (searchInput) {
-        // Focus and clear the input first
-        searchInput.focus();
-        searchInput.value = '';
-        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-        
-        // Set the search query
-        searchInput.value = searchQuery;
-        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-        
-        // Small delay to let suggestions appear (we'll dismiss them)
-        await this.sleep(300);
-        
-        // Dismiss the suggestions dropdown by pressing Escape first
-        // This prevents accidentally clicking on a suggestion element
-        const suggestionsGrid = document.querySelector('[role="grid"][aria-label="Suggestions"], .DAdBuc');
-        if (suggestionsGrid) {
-          console.log('⚠️ Suggestions dropdown detected - dismissing before search');
-        }
-        
-        // Use Enter key to submit the search - this is more reliable than
-        // clicking the search button and avoids interacting with suggestions
-        searchInput.dispatchEvent(new KeyboardEvent('keydown', {
-          key: 'Enter',
-          code: 'Enter',
-          keyCode: 13,
-          which: 13,
-          bubbles: true,
-          cancelable: true
-        }));
-        
-        // Fallback: also try clicking the search button
-        await this.sleep(200);
-        const searchButton = document.querySelector('button.mL3xi');
-        if (searchButton) {
-          searchButton.click();
-        }
-      }
-      resolve();
-    });
+    const searchInput = document.querySelector('input.UGojuc');
+    
+    if (!searchInput) {
+      console.warn('⚠️ Search input not found');
+      return;
+    }
+
+    // Focus and clear the input first
+    searchInput.focus();
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    // Set the search query
+    searchInput.value = searchQuery;
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    // Small delay to let suggestions appear (we'll dismiss them)
+    await this.sleep(300);
+
+    // Dismiss the suggestions dropdown if visible
+    const suggestionsGrid = document.querySelector('[role="grid"][aria-label="Suggestions"], .DAdBuc');
+    if (suggestionsGrid) {
+      console.log('⚠️ Suggestions dropdown detected - dismissing before search');
+      searchInput.dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'Escape',
+        code: 'Escape',
+        keyCode: 27,
+        which: 27,
+        bubbles: true,
+        cancelable: true
+      }));
+      await this.sleep(200);
+    }
+
+    // Use Enter key to submit the search
+    searchInput.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      code: 'Enter',
+      keyCode: 13,
+      which: 13,
+      bubbles: true,
+      cancelable: true
+    }));
+
+    // Fallback: also try clicking the search button
+    await this.sleep(200);
+    const searchButton = document.querySelector('button.mL3xi');
+    if (searchButton) {
+      searchButton.click();
+    }
   }
 
   async waitForResultsPane(maxAttempts = 20) {
@@ -679,7 +688,8 @@ class GoogleMapsScraper {
       });
 
       // Extract email from text content
-      const textContent = document.body.innerText;
+      const detailPanel = document.querySelector('.m6QErb[role="main"]') || document.body;
+      const textContent = detailPanel.innerText;
       const emailMatch = textContent.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
       if (emailMatch) {
         data.email = emailMatch[0];
