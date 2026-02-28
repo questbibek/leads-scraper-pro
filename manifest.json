@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Google Maps Easy Scrape",
-    "version": "2.1",
+    "version": "2.2",
     "description": "Google Maps Easy Scrape with Persistent Sidebar by Quest Bibek",
     "permissions": ["activeTab", "scripting", "storage"],
     "host_permissions": [
