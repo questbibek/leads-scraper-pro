@@ -3,7 +3,7 @@
     "name": "Google Maps Easy Scrape",
     "version": "2.2",
     "description": "Google Maps Easy Scrape with Persistent Sidebar by Quest Bibek",
-    "permissions": ["activeTab", "scripting", "storage"],
+    "permissions": ["activeTab", "storage"],
     "host_permissions": [
       "https://www.google.com/maps/*",
       "http://www.google.com/maps/*"
