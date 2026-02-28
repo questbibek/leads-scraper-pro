@@ -11,6 +11,7 @@ class GoogleMapsScraper {
     this.currentLocationName = '';
     this.saveTimeout = null;
     this.lastSaveTime = 0;
+    this.duplicatesSkipped = 0;
     
     this.init();
   }
@@ -194,6 +195,7 @@ class GoogleMapsScraper {
     this.isPaused = false;
     this.totalLocations = locations.length;
     this.currentLocation = 0;
+    this.duplicatesSkipped = 0;
 
     const startButton = document.getElementById('sidebar-start-scrape');
     const pauseButton = document.getElementById('sidebar-pause-scrape');
@@ -254,7 +256,7 @@ class GoogleMapsScraper {
     startButton.style.display = 'block';
     pauseButton.style.display = 'none';
     
-    this.showProgress(`✅ Complete! Scraped ${this.allResults.length} total results from ${locations.length} location(s)`, 'success');
+    this.showProgress(`✅ Complete! Scraped ${this.allResults.length} total results from ${locations.length} location(s)${this.duplicatesSkipped > 0 ? ` · ${this.duplicatesSkipped} duplicate(s) skipped` : ''}`, 'success');
 
     // Enable download button
     document.getElementById('sidebar-download-csv').disabled = false;
@@ -392,6 +394,16 @@ class GoogleMapsScraper {
         const data = await this.scrapeWithRetry(links[i], expectedName);
         data.href = links[i].href;
         data.location = this.currentLocationName;
+        
+        // Skip duplicates based on exact business name match
+        const isDuplicate = this.allResults.some(r => r.title && data.title && r.title === data.title);
+        if (isDuplicate) {
+          this.duplicatesSkipped++;
+          console.log(`⚠️ Duplicate skipped: "${data.title}" (total skipped: ${this.duplicatesSkipped})`);
+          this.showProgress(`⚠️ Skipped duplicate: ${data.title}`, 'warning');
+          await this.sleep(300);
+          continue;
+        }
         
         console.log('✅ Extracted:', data.title, '- Reviews:', data.reviewCount, '- Phone:', data.phone);
         results.push(data);
